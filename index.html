@@ -692,25 +692,25 @@ function tweetWeightedLen(s){
   return w;
 }
 const TWEET_HASHTAGS = ['核兵器被害想定マップ'];
-function hashtagsWeight(tags){
-  if (!tags.length) return 0;
-  // Xのintentは各タグに#を付けて半角スペース区切りで本文末尾に追記する
-  const joined = tags.map(t => `#${t}`).join(' ');
-  return tweetWeightedLen(joined);
-}
+// Xのintentの`hashtags`パラメータを使うと本文・URLの後ろに機械的に追記されてしまい読みにくい
+// (URLの後にタグが来る)ため、ハッシュタグは`text`の1行目として直接埋め込んで位置を制御する。
 function buildTweetText(){
   const r = lastResult;
   const locName = r && r.country ? r.country : '(海上と推定)';
   const TWEET_MAX = 280, URL_WEIGHT = 23, SAFETY_MARGIN = 5;
-  const textBudget = TWEET_MAX - URL_WEIGHT - SAFETY_MARGIN - hashtagsWeight(TWEET_HASHTAGS);
+  const textBudget = TWEET_MAX - URL_WEIGHT - SAFETY_MARGIN;
 
-  const header = `☢️ 核兵器被害想定マップ(概算) — ${weaponSummaryLabel()}`;
-  const baseLines = [header, `爆心地: ${locName}`];
-  // 優先度順(高→低): 死傷者数 > 経済被害額 > 詳細座標
+  const hashtagLine = TWEET_HASHTAGS.map(t => `#${t}`).join(' ');
+  const baseLines = [
+    hashtagLine,
+    weaponSummaryLabel(),
+    `爆心地: ${locName}(${gz.lat.toFixed(2)}°, ${gz.lon.toFixed(2)}°)`,
+  ];
+  // 優先度順(高→低): 死者数 > 負傷者数 > 経済被害額
   const optionalLines = [];
-  if (r) optionalLines.push(`推定死者数: ${fmtInt(r.totalFatal)}人 / 推定負傷者数: ${fmtInt(r.totalInjury)}人`);
+  if (r) optionalLines.push(`推定死者数: ${fmtInt(r.totalFatal)}人`);
+  if (r) optionalLines.push(`推定負傷者数: ${fmtInt(r.totalInjury)}人`);
   if (r) optionalLines.push(`推定経済被害額: ${fmtMoney(r.totalDamage)}`);
-  optionalLines.push(`(${gz.lat.toFixed(2)}°, ${gz.lon.toFixed(2)}°)`);
 
   const included = [];
   for (const line of optionalLines){
@@ -724,7 +724,7 @@ function shareToX(){
   if (!gz || !lastResult) return;
   const text = buildTweetText();
   const url = buildShareURL();
-  const q = new URLSearchParams({ text, url, hashtags: TWEET_HASHTAGS.join(',') });
+  const q = new URLSearchParams({ text, url });
   window.open(`https://twitter.com/intent/tweet?${q.toString()}`, '_blank', 'noopener,noreferrer');
 }
 const xShareBtn = document.getElementById('xShareBtn');
