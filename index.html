@@ -210,6 +210,7 @@ table.bands tr:last-child td{ border-bottom:none; }
     <div class="hint" id="hint">地図をクリックして爆心地を指定</div>
     <div class="share-overlay" id="shareOverlay" hidden></div>
     <input type="text" id="shareLinkOut" class="share-link-out" readonly hidden>
+    <textarea id="damageSummaryOut" class="share-link-out" rows="6" readonly hidden></textarea>
     <div class="mapwrap-actions">
       <button class="xshare-btn" id="xShareBtn" type="button" disabled aria-label="Xで下書きを作成">𝕏 共有</button>
       <button class="panel-toggle-btn" id="panelToggle" aria-label="パラメータ設定を開閉" aria-expanded="false">⚙ 設定</button>
@@ -575,7 +576,10 @@ function renderResults(){
     <div class="panel-section">
       <div class="panel-section-hd">
         <h2>推定被害</h2>
-        <button class="snap-btn" id="shareLinkBtn" type="button">🔗 URLをコピー</button>
+        <div style="display:flex; gap:6px;">
+          <button class="snap-btn" id="copyDamageBtn" type="button">📋 被害をコピー</button>
+          <button class="snap-btn" id="shareLinkBtn" type="button">🔗 URLをコピー</button>
+        </div>
       </div>
       <div class="locline"><span>爆心地: <b>${gz.lat.toFixed(2)}°, ${gz.lon.toFixed(2)}°</b></span><span>${r.country ? '所在: <b>'+r.country+'</b>' : '(海上と推定)'}</span></div>
       <div class="stat-grid">
@@ -592,6 +596,7 @@ function renderResults(){
       </div>` : ''}
     </div>`;
   document.getElementById('shareLinkBtn').addEventListener('click', copyShareLink);
+  document.getElementById('copyDamageBtn').addEventListener('click', copyDamageSummary);
   updateShareOverlay();
 }
 
@@ -748,6 +753,48 @@ async function copyShareLink(){
     out.hidden = false;
     out.focus();
     out.select();
+  }
+}
+
+function buildDamageSummaryText(){
+  const r = lastResult;
+  if (!gz || !r) return '';
+  const locName = r.country ? r.country : '(海上と推定)';
+  const lines = [
+    '核兵器被害想定マップ(概算)',
+    weaponSummaryLabel(),
+    `爆心地: ${gz.lat.toFixed(2)}°, ${gz.lon.toFixed(2)}°(${locName})`,
+    `推定死者数: ${fmtInt(r.totalFatal)}人`,
+    `推定負傷者数: ${fmtInt(r.totalInjury)}人`,
+    `推定経済被害額: ${fmtMoney(r.totalDamage)}`,
+  ];
+  if (r.plume){
+    lines.push(`放射性降下物: 風下方向へ約${fmtKm(r.plume.lengthKm)}km、最大幅約${fmtKm(r.plume.widthKm)}km`);
+  }
+  lines.push('※教育・啓発目的の概算シミュレーションです。正確な被害予測ではありません。');
+  return lines.join('\n');
+}
+async function copyDamageSummary(){
+  if (!gz || !lastResult) return;
+  const text = buildDamageSummaryText();
+  const out = document.getElementById('damageSummaryOut');
+  const btn = document.getElementById('copyDamageBtn');
+  try {
+    await navigator.clipboard.writeText(text);
+    if (out) out.hidden = true;
+    if (btn){
+      const orig = btn.textContent;
+      btn.textContent = 'コピーしました ✓';
+      setTimeout(() => { btn.textContent = orig; }, 1800);
+    }
+  } catch (e) {
+    // clipboard API blocked (e.g. sandboxed viewer) — fall back to a selectable field
+    if (out){
+      out.value = text;
+      out.hidden = false;
+      out.focus();
+      out.select();
+    }
   }
 }
 
