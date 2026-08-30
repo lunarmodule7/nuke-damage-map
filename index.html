@@ -428,7 +428,12 @@ function assessImpact(lon, lat, yieldKt, burst, windSpeed, windBearing){
       const overlapInner = circleIntersectionArea(city.dist, band.start, city.cityRadius);
       const overlapArea = Math.max(0, overlapOuter - overlapInner);
       popInRing += extraDensity * overlapArea;
-      gdpInRing += extraDensity * gdpPerCapita * overlapArea;
+      // 都市(特に首都・大都市)は人口比で見ても国全体の平均より一人当たりGDPが高い(都市集積効果)。
+      // これを無視して国平均のGDP/人をそのまま適用すると、首都直撃でも被害額が過小評価されがちになる。
+      // 都市規模スケーリング則(人口が大きい都市ほど一人当たり生産性が超線形に高い、指数はおよそ0.1〜0.2)
+      // を参考に、人口10万人を基準として指数0.15の緩やかな上乗せ係数をかけている。
+      const gdpMultiplier = Math.pow(Math.max(city.cpop, 100000) / 100000, 0.15);
+      gdpInRing += extraDensity * gdpPerCapita * gdpMultiplier * overlapArea;
     }
     totalPop += popInRing;
     totalFatal += popInRing * rates.fatal;
