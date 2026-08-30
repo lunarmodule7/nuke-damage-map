@@ -61,9 +61,14 @@ header h1{ display:flex; align-items:center; gap:10px; margin:0; white-space:now
 header h1 .logo-mark{ font-size:28px; line-height:1; filter:drop-shadow(0 1px 2px rgba(0,0,0,0.18)); }
 header h1 .logo-text{ font-size:21px; font-weight:800; letter-spacing:-0.01em; line-height:1.15; color:var(--text); }
 header h1 .sub{ display:block; font-size:10.5px; font-weight:500; color:var(--text-dim); letter-spacing:0.04em; margin-top:2px;}
-.search-wrap{ position:relative; flex:1; max-width:360px; }
-#citySearch{ width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--panel-2); color:var(--text); font-size:13px; font-family:inherit; }
+.search-wrap{ position:relative; flex:1; max-width:460px; }
+.search-row{ display:flex; gap:6px; align-items:stretch; }
+#citySearch{ flex:1; min-width:0; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--panel-2); color:var(--text); font-size:13px; font-family:inherit; }
 #citySearch:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+.search-btn{ font-family:inherit; font-size:12.5px; font-weight:600; white-space:nowrap; cursor:pointer; border-radius:8px; padding:0 12px; flex:0 0 auto; }
+#searchBtn{ color:#fff; background:var(--accent); border:1px solid var(--accent); }
+#searchClearBtn{ color:var(--text-dim); background:var(--panel-2); border:1px solid var(--border); }
+#searchClearBtn:hover{ color:var(--text); border-color:var(--text-dim); }
 #searchResults{ position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--panel); border:1px solid var(--border); border-radius:8px; box-shadow:var(--shadow); max-height:260px; overflow-y:auto; z-index:900; display:none; }
 #searchResults div{ padding:7px 12px; font-size:12.5px; cursor:pointer; display:flex; justify-content:space-between; gap:8px;}
 #searchResults div:hover, #searchResults div.active{ background:var(--accent-soft); }
@@ -182,7 +187,8 @@ table.bands tr:last-child td{ border-bottom:none; }
     transform:translateY(100%); transition:transform .25s ease; }
   aside.panel-open{ transform:translateY(0); }
   header h1 .sub{ display:none; }
-  .search-wrap{ max-width:none; }
+  header{ flex-wrap:wrap; row-gap:8px; }
+  .search-wrap{ max-width:none; flex-basis:100%; }
   .mapwrap-actions.raised{ bottom:calc(70vh + 14px); }
   .panel-toggle-btn{
     display:flex; align-items:center; justify-content:center; gap:6px;
@@ -199,7 +205,11 @@ table.bands tr:last-child td{ border-bottom:none; }
 <header>
   <h1><span class="logo-mark">☢️</span><span class="logo-text">核兵器被害想定マップ<span class="sub">実地図版(OpenStreetMap) — 概算・非公式</span></span></h1>
   <div class="search-wrap">
-    <input id="citySearch" type="text" placeholder="都市名で検索して移動(例: 東京, Tokyo, Moscow)" autocomplete="off">
+    <div class="search-row">
+      <input id="citySearch" type="text" placeholder="都市名で検索して移動(例: 東京, Tokyo, Moscow)" autocomplete="off">
+      <button id="searchBtn" class="search-btn" type="button">検索</button>
+      <button id="searchClearBtn" class="search-btn" type="button">クリア</button>
+    </div>
     <div id="searchResults"></div>
   </div>
 </header>
@@ -943,6 +953,21 @@ searchInput.addEventListener('keydown', (e) => {
 });
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.search-wrap')) searchResults.style.display = 'none';
+});
+function commitSearch(){
+  runSearch();
+  if (currentMatches.length){
+    const c = currentMatches[highlightIndex] || currentMatches[0];
+    if (c) selectCity(c);
+  }
+}
+document.getElementById('searchBtn').addEventListener('click', commitSearch);
+document.getElementById('searchClearBtn').addEventListener('click', () => {
+  searchInput.value = '';
+  searchResults.style.display = 'none';
+  currentMatches = [];
+  highlightIndex = -1;
+  searchInput.focus();
 });
 
 /* ===================== mobile parameter panel toggle ===================== */
