@@ -181,6 +181,11 @@ table.bands td{ padding:5px 4px; border-bottom:1px solid var(--border); font-fam
 table.bands tr:last-child td{ border-bottom:none; }
 .sev-chip{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle;}
 .disclaimer{ padding:12px 16px 18px; font-size:10.5px; line-height:1.6; color:var(--text-dim); }
+.about-tool{ padding:0 16px 18px; font-size:12px; line-height:1.7; color:var(--text-dim); }
+.about-tool summary{ cursor:pointer; font-weight:700; font-size:12.5px; color:var(--text); }
+.about-tool h3{ font-size:12.5px; color:var(--text); margin:12px 0 4px; }
+.about-tool p, .about-tool ul{ margin:4px 0; }
+.about-tool ul{ padding-left:18px; }
 .disclaimer b{ color:var(--text); }
 @media (max-width: 860px){
   aside{ position:fixed; left:0; right:0; bottom:0; top:auto; width:auto; max-height:70vh; z-index:2000; border-left:none; border-top:1px solid var(--border); box-shadow:0 -6px 20px rgba(0,0,0,0.15); border-radius:14px 14px 0 0;
@@ -280,6 +285,28 @@ table.bands tr:last-child td{ border-bottom:none; }
       <b>免責事項:</b> 本ツールは公開されている簡易な物理スケーリング則(Glasstone &amp; Dolan由来のcube-root則等)と、国別統計・主要都市人口データに基づく粗い近似モデルにより概算値を表示する教育・啓発目的のシミュレーターです。実際の兵器効果、地形・建築物・気象条件・軍事的判断等は一切考慮していません。経済被害額は米ドル換算値を1ドル=160円の概算レートで円換算しており、実勢レートとは異なります。表示される数値は正確な予測ではなく、意思決定や実際の被害想定の根拠として使用しないでください。地図データ: &copy; OpenStreetMap contributors。<br>
       <a href="https://github.com/lunarmodule7/nuke-damage-map/blob/main/METHODOLOGY.md" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">→ 算出方法の詳細(計算式・データソース)</a>
     </div>
+
+    <details class="about-tool">
+      <summary>このツールについて(使い方・想定シナリオ)</summary>
+      <p>核兵器被害想定マップは、核兵器が任意の地点で爆発した場合の被害範囲と人的・経済被害の概算を、実際の地図(OpenStreetMap)上に表示する教育・啓発目的のシミュレーターです。海外の類似ツールと異なり、日本語表示に対応し、日本国内については市区町村・政令指定都市の区単位(約1,900地点)の人口データで推定します。経済被害額は円建てで表示されます。</p>
+      <h3>使い方</h3>
+      <ul>
+        <li>地図をクリックすると、その地点が爆心地になり、爆風(致命的=20psi/重度=5psi/中軽度=1psi相当)・熱放射・初期放射線の到達範囲と、推定死者数・負傷者数・経済被害額が表示されます。</li>
+        <li>都市名で検索して爆心地を指定することもできます。</li>
+        <li>威力はプリセット(戦術核1kt〜ツァーリ・ボンバ50Mt)から選ぶか、任意のkt値を入力できます。</li>
+        <li>空中爆発と地上爆発を切り替えられます。地上爆発では風向・風速を指定すると、放射性降下物(フォールアウト)が風下に広がる想定範囲が表示されます。</li>
+        <li>現在の設定はURLに保存されるため、そのままリンクを共有できます。X共有ボタンや被害サマリーのコピーも可能です。</li>
+      </ul>
+      <h3>想定シナリオの例</h3>
+      <ul>
+        <li>広島型(15kt)を現在の広島・東京で爆発させた場合の被害規模の比較</li>
+        <li>現代の戦略核弾頭(300kt級、ICBM搭載クラス)が首都圏に着弾した場合の影響範囲</li>
+        <li>戦術核(1〜10kt)が港湾・基地周辺で使用された場合の局地的な被害</li>
+        <li>地上爆発時のフォールアウトが、季節風などの風向きでどの方面に広がるか</li>
+      </ul>
+      <h3>計算の前提</h3>
+      <p>爆風の到達距離はGlasstone &amp; Dolanの立方根則(出力の立方根に比例)、熱放射は平方根則で近似し、人口はNatural Earthの国・都市統計と日本の市区町村別人口(2015年国勢調査ベース)から推定しています。地形・建物の構造・避難行動・火災などの二次災害は考慮していないため、数値は桁感をつかむための概算です。計算式とデータの詳細は算出方法の詳細(METHODOLOGY.md)に公開しています。</p>
+    </details>
   </aside>
 </div>
 
