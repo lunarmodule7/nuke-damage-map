@@ -1,8 +1,12 @@
 # 核兵器被害想定マップ(実地図版)
 
+![核兵器被害想定マップ](og-image.png)
+
 投下地点・威力(kt)・爆発高度・風向風速を指定すると、爆風・熱放射・放射性降下物による推定被害(死者数・負傷者数・経済被害額)を実際の地図(OpenStreetMap)上に表示する教育・啓発目的のシミュレーターです。
 
-**公開ページ: https://lunarmodule7.github.io/nuke-damage-map/**
+**▶ ライブデモ: https://lunarmodule7.github.io/nuke-damage-map/**
+
+![デモ: 東京を爆心地に広島型15ktとICBM弾頭300ktを切り替えた表示](demo.gif)
 
 ## できること
 
