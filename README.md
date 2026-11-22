@@ -6,6 +6,8 @@
 
 **▶ ライブデモ: https://lunarmodule7.github.io/nuke-damage-map/**
 
+解説記事: [核兵器被害想定マップ: もし核が自分の街に落ちたら](http://blog.livedoor.jp/lunarmodule7/archives/5729756.html)(ブログ「A Successful Failure」)
+
 ![デモ: 東京を爆心地に広島型15ktとICBM弾頭300ktを切り替えた表示](demo.gif)
 
 ## できること
