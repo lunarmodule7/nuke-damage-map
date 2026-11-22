@@ -566,6 +566,7 @@ function setGZ(lon, lat){
   if (hintEl){ hintEl.style.opacity = '0'; }
   recalc();
   fitToResult();
+  gcEvent('simulate');
 }
 function recalc(){
   if (!gz) return;
@@ -742,6 +743,7 @@ function buildTweetText(){
 }
 function shareToX(){
   if (!gz || !lastResult) return;
+  gcEvent('share-x');
   const text = buildTweetText();
   const url = buildShareURL();
   const q = new URLSearchParams({ text, url });
@@ -752,6 +754,7 @@ if (xShareBtn) xShareBtn.addEventListener('click', shareToX);
 
 async function copyShareLink(){
   if (!gz || !lastResult) return;
+  gcEvent('copy-url');
   const url = buildShareURL();
   const out = document.getElementById('shareLinkOut');
   const btn = document.getElementById('shareLinkBtn');
@@ -791,6 +794,7 @@ function buildDamageSummaryText(){
 }
 async function copyDamageSummary(){
   if (!gz || !lastResult) return;
+  gcEvent('copy-summary');
   const text = buildDamageSummaryText();
   const out = document.getElementById('damageSummaryOut');
   const btn = document.getElementById('copyDamageBtn');
@@ -1004,5 +1008,15 @@ if (!applyStateFromHash()){
 }
 
 </script>
+<script>
+  // アクセス解析（GoatCounter）: イベント送信用ヘルパー。解析スクリプト未読込時は何もしない。
+  function gcEvent(name){
+    if (window.goatcounter && window.goatcounter.count){
+      window.goatcounter.count({ path: name, title: name, event: true });
+    }
+  }
+</script>
+<script data-goatcounter="https://lunarmodule7.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
